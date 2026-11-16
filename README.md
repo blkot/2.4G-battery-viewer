@@ -15,6 +15,12 @@ Windows 上读取 2.4G 无线外设电量的小工具。**纯 ctypes 调系统 D
 
 **你的设备不在这两行里？** 别硬改这个仓库，往下看「用 prompt 做一份你自己的」。
 
+> **同仓库的另一份实现**：本机还按同样的方法做了 **罗技 GPW2 / 索尼 WH-1000XM4**
+> 的版本（`my_gear.py` + `my_gear_tray.py`），说明见 [MY_GEAR.md](MY_GEAR.md)。
+> 两份工具的单实例锁、启动项、配置都独立，可以同时运行。
+> 宁芝 X87EC(S) 键盘已从这份实现中移除：它的 2.4G dongle 实测**不透传电量**，
+> 完整证据见 MY_GEAR.md 的历史记录。
+
 ## 使用方法
 
 ```bash
@@ -178,6 +184,14 @@ prompt 里已经写好了硬性约束、协议模板、7 条会踩的坑和验�
 | `win_link.py` | 软连接：符号链接 / 目录 junction / 硬链接，按权限自动降级 |
 | `win_shell.py` | 已知文件夹路径 + 用 ctypes COM 创建 `.lnk` |
 | `app.py` | 完整调试版界面 |
+| `logi_hidpp.py` | 罗技 HID++ 2.0 客户端（设备索引 / 设备名 / 电量 0x1004） |
+| `my_gear.py` | **我的鼠标 + 耳机**读取层 + 命令行（`--once` / `--diagnose` / `--autostart`） |
+| `my_gear_tray.py` | **我的鼠标 + 耳机**托盘（2 个数字图标 + 原生右键菜单） |
+| `my_gear_common.py` | 我的鼠标 + 耳机：配置 / 开机自启 / 单实例 / 冻结 exe 适配 |
+| `installer.iss` | Inno Setup 安装包脚本（开始菜单 / 桌面 / 卸载 / 可选自启） |
+| `build.ps1` | 一键构建单文件 exe 和安装包 |
+| `build_assets.py` | 生成安装包图标 |
+| `MY_GEAR.md` | 我的鼠标 + 耳机：实测结论、套餐说明与安装包构建方法 |
 | `PROMPT.md` | 把整个项目整理成一份可复用的提示词 |
 
 ## 两个值得一提的实现细节

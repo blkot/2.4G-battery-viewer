@@ -28,6 +28,7 @@ DIGITS = {
     "8": ("111", "101", "111", "101", "111"),
     "9": ("111", "101", "111", "001", "111"),
     "%": ("101", "001", "010", "100", "101"),
+    "?": ("111", "001", "011", "000", "010"),
 }
 
 GLYPH_W, GLYPH_H = 3, 5
@@ -164,15 +165,94 @@ def _ensure_tmp() -> str:
     return _tmp_dir
 
 
-def make_hicon(text: str, color: tuple[int, int, int], plate: bool = False) -> int:
+def battery_rgba(size: int, color: tuple[int, int, int], plate: bool = False,
+                 plate_color: tuple[int, int, int, int] = (28, 30, 34, 235),
+                 level: int = 100) -> bytes:
+    """画一个电池图标（用于 100% 等特殊状态），返回 size*size*4 RGBA。"""
+    px = bytearray(size * size * 4)
+
+    def put(x: int, y: int, rgba) -> None:
+        if 0 <= x < size and 0 <= y < size:
+            i = (y * size + x) * 4
+            px[i:i + 4] = bytes(rgba)
+
+    if plate:
+        r = max(1, size // 8)
+        for y in range(size):
+            for x in range(size):
+                cx = min(x, size - 1 - x)
+                cy = min(y, size - 1 - y)
+                if cx + cy < r and cx < r and cy < r:
+                    continue
+                put(x, y, plate_color)
+
+    x0 = max(1, int(size * 0.08))
+    x1 = max(x0 + 2, int(size * 0.76))
+    y0 = max(1, int(size * 0.27))
+    y1 = max(y0 + 2, int(size * 0.73))
+    cx0, cx1 = x1, max(x1 + 1, int(size * 0.88))
+    cy0, cy1 = int(size * 0.40), max(int(size * 0.40) + 1, int(size * 0.60))
+    t = max(1, size // 14)
+    outline = (18, 20, 24, 255)
+
+    # 主体边框
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if x < x0 + t or x >= x1 - t or y < y0 + t or y >= y1 - t:
+                put(x, y, outline)
+    # 正极帽
+    for y in range(cy0, cy1):
+        for x in range(cx0, cx1):
+            if x >= cx1 - t or y < cy0 + t or y >= cy1 - t:
+                put(x, y, outline)
+    # 电量条
+    ix0, ix1 = x0 + t, x1 - t
+    iy0, iy1 = y0 + t, y1 - t
+    fill_h = max(1, int((iy1 - iy0) * max(0, min(100, level)) / 100))
+    for y in range(iy1 - fill_h, iy1):
+        for x in range(ix0, ix1):
+            put(x, y, (*color, 255))
+    return bytes(px)
+
+
+def make_hicon(text: str, color: tuple[int, int, int], plate: bool = False,
+               plate_color: tuple[int, int, int, int] = (28, 30, 34, 235)) -> int:
     """按文字+颜色生成（带缓存的）HICON；失败返回 0。"""
-    key = (text, color, plate)
+    key = (text, color, plate, plate_color if plate else None)
     if key in _icon_cache:
         return _icon_cache[key]
-    images = [(s, render_rgba(text, s, color, plate)) for s in SIZES]
+    images = [(s, render_rgba(text, s, color, plate, plate_color)) for s in SIZES]
     ico = build_ico(images)
-    path = os.path.join(_ensure_tmp(), f"ico_{text}_{color[0]:02x}{color[1]:02x}"
-                                       f"{color[2]:02x}_{int(plate)}.ico")
+    # "?" 等字符不能出现在 Windows 文件名里，换成安全代号
+    safe = text.replace("?", "qm").replace("%", "pct")
+    path = os.path.join(_ensure_tmp(), f"ico_{safe}_{color[0]:02x}{color[1]:02x}"
+                                       f"{color[2]:02x}_{int(plate)}"
+                                       f"_{plate_color[0]:02x}{plate_color[1]:02x}"
+                                       f"{plate_color[2]:02x}.ico")
+    try:
+        with open(path, "wb") as f:
+            f.write(ico)
+    except OSError:
+        return 0
+    h = user32.LoadImageW(None, path, IMAGE_ICON, 0, 0, LR_LOADFROMFILE)
+    hicon = int(h) if h else 0
+    _icon_cache[key] = hicon
+    return hicon
+
+
+def make_battery_hicon(color: tuple[int, int, int], plate: bool = False,
+                       plate_color: tuple[int, int, int, int] = (28, 30, 34, 235),
+                       level: int = 100) -> int:
+    """满电（或指定电量）电池图标；用于避免 100 的三位数缩小问题。"""
+    key = ("battery", color, plate, plate_color if plate else None, level)
+    if key in _icon_cache:
+        return _icon_cache[key]
+    images = [(s, battery_rgba(s, color, plate, plate_color, level)) for s in SIZES]
+    ico = build_ico(images)
+    path = os.path.join(_ensure_tmp(), f"ico_battery_{color[0]:02x}{color[1]:02x}"
+                                       f"{color[2]:02x}_{int(plate)}"
+                                       f"_{plate_color[0]:02x}{plate_color[1]:02x}"
+                                       f"{plate_color[2]:02x}_{level}.ico")
     try:
         with open(path, "wb") as f:
             f.write(ico)

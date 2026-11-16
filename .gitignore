@@ -17,3 +17,11 @@ tray_config.json
 .idea/
 Thumbs.db
 desktop.ini
+
+# 我的外设托盘运行时文件
+my_gear_config.json
+
+# 打包产物
+build/
+dist/
+*.spec

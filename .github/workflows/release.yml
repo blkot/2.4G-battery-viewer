@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer and update manifest
+        shell: pwsh
+        run: |
+          $ver = (python -c "import version; print(version.APP_VERSION)").Trim()
+          $tag = "${{ github.ref_name }}"
+          $repo = "${{ github.repository }}"
+          $url = "https://github.com/$repo/releases/download/$tag/MyGearBatteryTray-Setup-$ver.exe"
+          .\build.ps1 -Python python -UpdateUrl $url
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ver = (python -c "import version; print(version.APP_VERSION)").Trim()
+          $tag = "${{ github.ref_name }}"
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release $tag already exists; skipping"
+            exit 0
+          }
+          gh release create $tag `
+            "dist/MyGearBatteryTray-Setup-$ver.exe" `
+            "dist/MyGearBatteryTray.exe" `
+            "dist/update.json" `
+            --title "外设电量托盘 v$ver" `
+            --generate-notes

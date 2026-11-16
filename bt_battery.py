@@ -150,6 +150,7 @@ def list_bluetooth_devices() -> list[BluetoothDevice]:
     attempts = (
         (None, None, DIGCF_ALLCLASSES),
         ("BTHENUM", None, 0),
+        ("BTHLE", None, 0),          # 蓝牙 LE（BLE HID 键盘/鼠标的电量也走这个属性）
         (None, CLASS_SYSTEM, 0),
         (None, CLASS_BLUETOOTH, 0),
     )
@@ -169,7 +170,7 @@ def list_bluetooth_devices() -> list[BluetoothDevice]:
                     break
                 index += 1
                 iid = _instance_id(hdev, info)
-                if not iid.upper().startswith("BTHENUM") or iid in found:
+                if not iid.upper().startswith(("BTHENUM", "BTHLE")) or iid in found:
                     continue
                 name = _device_string(hdev, info, SPDRP_FRIENDLYNAME)
                 if not name:
