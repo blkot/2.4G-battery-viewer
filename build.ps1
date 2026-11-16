@@ -15,10 +15,11 @@ $ver = (& $Python @pyArgs -c "import version; print(version.APP_VERSION)").Trim(
 if (-not $ver) { throw '无法从 version.py 读取版本号' }
 Write-Host "版本：$ver"
 
-Write-Host '== 2/4 生成图标并打包单文件 exe =='
+Write-Host '== 2/4 生成图标/版本信息并打包单文件 exe =='
 & $Python @pyArgs build_assets.py
+& $Python @pyArgs packaging\make_version_info.py
 $icon = (Resolve-Path 'build\app.ico').Path
-$verFile = (Resolve-Path 'packaging\version_info.txt').Path
+$verFile = (Resolve-Path 'build\version_info.txt').Path
 & $Python @pyArgs -m PyInstaller --noconfirm --clean --onefile --noconsole `
     --name MyGearBatteryTray `
     --icon $icon `

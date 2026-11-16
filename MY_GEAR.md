@@ -59,6 +59,8 @@ python my_gear.py --autostart status
   - 刷新
   - 刷新间隔（30 秒 ~ 30 分钟）
   - 开机自启（勾选状态直接读系统启动项）
+  - 启动时检查更新（可关闭）
+  - 检查更新 / 更新到 vX.Y.Z…
   - 查看详情
   - 退出
 
@@ -119,8 +121,12 @@ Windows 收到耳机通过 HFP 上报的电量后，会写到 **Hands-Free AG** 
 
 ```
 dist\MyGearBatteryTray.exe
-dist\MyGearBatteryTray-Setup-1.0.0.exe
+dist\MyGearBatteryTray-Setup-<version>.exe
+dist\update.json
 ```
+
+版本号只来自 `version.py` 的 `APP_VERSION`：exe 的文件版本信息由
+`packaging/make_version_info.py` 在构建时生成，安装包和 `update.json` 也使用同一个值。
 
 安装包默认装到当前用户目录，不需要管理员权限：
 
@@ -131,6 +137,17 @@ dist\MyGearBatteryTray-Setup-1.0.0.exe
 安装/卸载时会调用程序自己的 `--quit` 和 `--autostart off`，退出托盘并清理启动项。
 配置 `my_gear_config.json` 保存在安装目录，卸载时一并删除。
 
+## 从 GitHub Release 更新
+
+- 发布仓库：`blkot/2.4G-battery-viewer`
+- 更新源：`https://github.com/blkot/2.4G-battery-viewer/releases/latest/download/update.json`
+- 启动时自动检查一次（可在右键菜单关闭），也可以手动「检查更新…」
+- 发现新版本后：下载安装包 → 校验 `update.json` 里的 SHA-256 → 静默安装 → 自动重启
+- 网络请求优先使用系统 PowerShell（走系统代理），失败再回退 Python urllib
+
+推送 `v*` tag 会触发 `.github/workflows/release.yml` 自动构建并发布 Release；
+工作流会检查 **tag 必须等于 `v` + `version.py` 里的 `APP_VERSION`**，避免版本号漂移。
+
 ## 文件
 
 | 文件 | 说明 |
@@ -140,8 +157,12 @@ dist\MyGearBatteryTray-Setup-1.0.0.exe
 | `my_gear_tray.py` | 托盘：2 个数字图标 + 原生右键菜单 + `SetTimer` 刷新 |
 | `my_gear_common.py` | 配置、开机自启、单实例/进程间消息、冻结 exe 路径适配 |
 | `installer.iss` | Inno Setup 安装包脚本 |
-| `build.ps1` | 一键构建 exe + 安装包 |
+| `build.ps1` | 一键构建 exe + 安装包 + `update.json` |
 | `build_assets.py` | 生成安装包图标 |
+| `version.py` | 唯一版本号（`APP_VERSION`）与发布/更新渠道配置 |
+| `updater.py` | GitHub Release 更新检查、下载、SHA-256 校验、静默安装 |
+| `packaging/make_version_info.py` | 从 `version.py` 生成 exe 的 `build/version_info.txt` |
+| `packaging/make_update_manifest.py` | 生成 Release 用的 `update.json` |
 | `my_gear_config.json` | 运行时配置（刷新间隔 / 自启意愿），已加入 `.gitignore` |
 
 ## 已知限制
@@ -154,6 +175,6 @@ dist\MyGearBatteryTray-Setup-1.0.0.exe
 
 ## 隐私
 
-- **不联网**：没有任何 http / socket / urllib / 遥测调用，所有读取都在本地完成。
+- **只为更新联网**：只有检查更新/下载安装包时会访问 GitHub；可以在右键菜单关闭「启动时检查更新」。
 - **不写日志**：默认不产生日志文件；只有 `--debug` 时才往控制台打印。
 - **不上传**：设备序列号、地址等信息只在内存里用，不落盘。

@@ -189,8 +189,12 @@ prompt 里已经写好了硬性约束、协议模板、7 条会踩的坑和验�
 | `my_gear_tray.py` | **我的鼠标 + 耳机**托盘（2 个数字图标 + 原生右键菜单） |
 | `my_gear_common.py` | 我的鼠标 + 耳机：配置 / 开机自启 / 单实例 / 冻结 exe 适配 |
 | `installer.iss` | Inno Setup 安装包脚本（开始菜单 / 桌面 / 卸载 / 可选自启） |
-| `build.ps1` | 一键构建单文件 exe 和安装包 |
+| `build.ps1` | 一键构建单文件 exe、安装包和 `update.json` |
 | `build_assets.py` | 生成安装包图标 |
+| `version.py` | 唯一版本号与 GitHub Release 更新渠道 |
+| `updater.py` | GitHub Release 更新检查、下载、SHA-256 校验、静默安装 |
+| `packaging/make_version_info.py` | 从 `version.py` 生成 exe 文件版本信息 |
+| `packaging/make_update_manifest.py` | 生成 Release 用的 `update.json` |
 | `MY_GEAR.md` | 我的鼠标 + 耳机：实测结论、套餐说明与安装包构建方法 |
 | `PROMPT.md` | 把整个项目整理成一份可复用的提示词 |
 
@@ -205,7 +209,7 @@ prompt 里已经写好了硬性约束、协议模板、7 条会踩的坑和验�
 
 ## 隐私
 
-- **不联网**：没有任何 http / socket / urllib / 遥测调用，所有读取都在本地 HID 层完成。
+- **只为更新联网**：只有检查更新/下载安装包时访问 GitHub，可在右键菜单关闭自动检查。
 - **不写日志**：默认不产生任何日志文件；只有 `--debug` 时才往控制台打印。
 - **不上传**：设备序列号、地址等信息只在内存里用，不落盘。
 

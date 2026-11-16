@@ -30,6 +30,9 @@ jobs:
         run: |
           $ver = (python -c "import version; print(version.APP_VERSION)").Trim()
           $tag = "${{ github.ref_name }}"
+          if ($tag -ne "v$ver") {
+            throw "Tag '$tag' does not match version.py APP_VERSION '$ver'"
+          }
           $repo = "${{ github.repository }}"
           $url = "https://github.com/$repo/releases/download/$tag/MyGearBatteryTray-Setup-$ver.exe"
           .\build.ps1 -Python python -UpdateUrl $url
