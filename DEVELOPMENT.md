@@ -393,7 +393,6 @@ dist\update.json
 - CI 用 `-Python python`；本地默认 `-Python py`，走 `py -3.10`。
 - PyInstaller onefile 运行时会出现父/子两个 `MyGearBatteryTray.exe` 进程，这是正常的。
 - `build/`、`dist/`、`*.spec` 已在 `.gitignore`。
-- `official_firmware/` 是未跟踪的用户数据，不要提交。
 - 安装包的 `AppId` 不要改，否则会被当成另一个产品，影响升级和卸载。
 
 ## 9. 测试清单
@@ -426,7 +425,6 @@ dist\update.json
 9. **当前是 per-user 安装**：不要改成 `Program Files`，会引入管理员权限和升级路径问题。
 10. **README 与 DEVELOPMENT 要保持同步**：README 面向用户，DEVELOPMENT 面向开发者；改发布流程或版本规则时两边一起更新。
 11. **`my_gear_common.py` 顶部 docstring 仍写着“三台外设”**：历史文案，实际只有两台；可顺手清理。
-12. **不要提交 `official_firmware/`**：这是本机抓包/固件资料，不属于发布物。
 
 ## 11. 代码签名现状
 
@@ -461,7 +459,6 @@ SignPath 或 Azure 的 GitHub Actions 集成完成，不要把私钥放进仓库
 - [ ] 知道普通提交不要打 tag
 - [ ] 知道 `version.py` 是唯一版本源
 - [ ] 知道 `README.md` 面向用户、`MY_GEAR.md` 讲协议、`DEVELOPMENT.md` 讲开发/发布
-- [ ] 知道 `official_firmware/` 不提交
 
 ## 13. 可选后续工作
 
