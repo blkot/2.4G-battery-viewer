@@ -3,6 +3,8 @@
 这是给本机 **罗技 G PRO X Superlight（GPW2）** 和 **索尼 WH-1000XM4** 做的
 托盘电量工具。纯 Python + ctypes，零第三方运行时依赖，也可以打包成安装 exe。
 
+开发、构建、发布和交接说明见 [DEVELOPMENT.md](DEVELOPMENT.md)。
+
 > 宁芝 X87EC(S) 键盘已从本工具移除：它的 2.4G dongle 是单向 BLE→USB HID 桥，
 > 不转发 BLE 电量，Windows 侧没有可查询的通道。历史分析仍可从 git 记录里找到。
 

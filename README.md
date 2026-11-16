@@ -1,5 +1,9 @@
 # 设备电量查看器
 
+> **当前实际发布物**：`my_gear_tray.py`（罗技 GPW2 + 索尼 WH-1000XM4）。
+> 开发、构建、发布和交接说明见 [DEVELOPMENT.md](DEVELOPMENT.md)。
+> 下面 `my_devices.py` 等内容是早期通用设备版本，不是当前发布物。
+
 Windows 上读取 2.4G 无线外设电量的小工具。**纯 ctypes 调系统 DLL，零第三方依赖**——
 不用 hidapi、不用 pystray、不用 Pillow、不用 pywin32，装了 Python 就能跑。
 
