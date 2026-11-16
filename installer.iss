@@ -2,7 +2,7 @@
 ; 构建：先运行 build.ps1（会生成 dist\MyGearBatteryTray.exe）
 
 #ifndef MyAppVersion
-  #define MyAppVersion "1.1.0"
+  #define MyAppVersion "1.1.1"
 #endif
 
 #define MyAppName "外设电量托盘"
