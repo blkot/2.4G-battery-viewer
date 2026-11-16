@@ -120,10 +120,10 @@ py -3.10 my_gear.py --autostart status
 
 - `my_devices.py`、`app.py`、`tray_app.py`、`tray_common.py`
 - `battery.py`、`darkrim_proto.py`、`win_link.py`
-- `PROMPT.md` 和 README 里的通用设备部分
+- `PROMPT.md` 等上游通用文档
 
 不要在没有确认的情况下删除它们；它们是上游通用工具的产物，也可能是其他用户仍在用的入口。
-当前产品的使用说明以 `MY_GEAR.md` 为准。
+当前产品的使用说明以 `README.md` 和 `MY_GEAR.md` 为准。
 
 ### 运行时结构
 
@@ -424,7 +424,7 @@ dist\update.json
 7. **100% 必须用电池图标**：数字 `100` 在 16px 下会被压缩到不可读。
 8. **更新检查优先 PowerShell**：不要为了“纯标准库”删掉它，否则部分网络环境会超时。
 9. **当前是 per-user 安装**：不要改成 `Program Files`，会引入管理员权限和升级路径问题。
-10. **README 不是当前产品说明**：README 主体是早期通用工具；当前产品看 `MY_GEAR.md` 和本文件。
+10. **README 与 DEVELOPMENT 要保持同步**：README 面向用户，DEVELOPMENT 面向开发者；改发布流程或版本规则时两边一起更新。
 11. **`my_gear_common.py` 顶部 docstring 仍写着“三台外设”**：历史文案，实际只有两台；可顺手清理。
 12. **不要提交 `official_firmware/`**：这是本机抓包/固件资料，不属于发布物。
 
@@ -460,7 +460,7 @@ SignPath 或 Azure 的 GitHub Actions 集成完成，不要把私钥放进仓库
 - [ ] 知道当前版本是 `1.1.2`，Release 只保留 `v1.1.2`
 - [ ] 知道普通提交不要打 tag
 - [ ] 知道 `version.py` 是唯一版本源
-- [ ] 知道 `MY_GEAR.md` 是当前产品说明，README 主体是历史通用工具
+- [ ] 知道 `README.md` 面向用户、`MY_GEAR.md` 讲协议、`DEVELOPMENT.md` 讲开发/发布
 - [ ] 知道 `official_firmware/` 不提交
 
 ## 13. 可选后续工作
@@ -471,4 +471,4 @@ SignPath 或 Azure 的 GitHub Actions 集成完成，不要把私钥放进仓库
 - 增加 `parse_version()`、耳机状态机、manifest 校验的单元测试
 - 清理早期通用文件前先确认没有其他用户依赖
 - 让 `workflow_dispatch` 支持手动发布（需要调整 job 的 `if`）
-- 把 README 收敛为当前产品说明，历史通用内容迁到单独文档
+- 持续维护 `README.md` / `MY_GEAR.md` / `DEVELOPMENT.md` 的分工，避免文档过期
