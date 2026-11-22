@@ -45,10 +45,12 @@ Windows 通知区域工具，显示两台设备的电量：
 
 | 远端 | 地址 | 权限 |
 |---|---|---|
-| `origin` | `https://github.com/yszyszysz233/2.4G-battery-viewer.git` | 上游，当前账号只读 |
-| `fork` | `git@github.com:blkot/2.4G-battery-viewer.git` | 自己的 fork，可推送 |
+| `origin` | `git@github.com:blkot/2.4G-battery-viewer.git` | 自己的 fork，默认推送目标 |
+| `upstream` | `git@github.com:yszyszysz233/2.4G-battery-viewer.git` | 上游，只读 |
 
-发布走 `fork`。`version.py` 里的 `GITHUB_REPO` 和 Release 工作流都指向
+`main` 跟踪 `origin/main`，日常 `git push` / `git pull` 都走自己的 fork。
+
+`version.py` 里的 `GITHUB_REPO` 和 Release 工作流都指向
 `blkot/2.4G-battery-viewer`。如果以后发布仓库变更，改 `version.py` 的
 `GITHUB_REPO` 即可；工作流里的仓库地址使用当前 Actions 仓库，不需要改。
 
